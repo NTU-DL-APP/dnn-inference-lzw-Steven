@@ -6,14 +6,17 @@ def relu(x):
     return np.maximum(0, x)
 
 def softmax(x):
+    x = np.asarray(x)
     if x.ndim == 1:
         x = x - np.max(x)
         e_x = np.exp(x)
         return e_x / np.sum(e_x)
-    else:
+    elif x.ndim == 2:
         x = x - np.max(x, axis=1, keepdims=True)
         e_x = np.exp(x)
         return e_x / np.sum(e_x, axis=1, keepdims=True)
+    else:
+        raise ValueError("softmax expects 1D or 2D input")
 
 # === Flatten ===
 def flatten(x):
@@ -24,11 +27,9 @@ def dense(x, W, b):
     return x @ W + b
 
 # === Forward inference function ===
-# 使用 keras JSON 與 npz 權重做推論
 def nn_forward_h5(model_arch, weights, data):
     x = data
 
-    # 支援 Keras JSON 結構解析
     for layer in model_arch['config']['layers']:
         class_name = layer['class_name']
         config = layer['config']
